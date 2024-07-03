@@ -69,7 +69,7 @@ export const getSuggestedUsers = async (req, res) => {
        const users = await User.aggregate([
         {
             $match: {
-                _id: {$me: userId}
+                _id: {$ne: userId}
             }
         },
         {$sample: {size:10 }}
