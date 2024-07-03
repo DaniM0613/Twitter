@@ -4,16 +4,16 @@ import bcrypt from 'bcrypt'
 
 export const signup = async (req, res) => {
     try { 
-        const {fullName, userName, email, password} = req.body;
+        const {fullName, username, email, password} = req.body;
         
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailRegex.test(email)){
             return res.status(400).json({error: 'Invalid email format'});
         }
         
-        const existingUser = await User.findOne({userName});
+        const existingUser = await User.findOne({username});
             if(existingUser){
-                return res.status(400).json({error: 'Username is already taken' });
+                return res.status(400).json({error: 'username is already taken' });
         }
         
         const existingEmail = await User.findOne({email});
@@ -30,7 +30,7 @@ export const signup = async (req, res) => {
 
         const newUser = new User({
             fullName,
-            userName,
+            username,
             email,
             password:hashedPassword
         })
@@ -41,7 +41,7 @@ export const signup = async (req, res) => {
             res.status(201).json({
                 _id: newUser._id,
                 fullName: newUser.fullName,
-                userName: newUser.userName,
+                username: newUser.username,
                 email: newUser.email,
                 followers: newUser.followers,
                 following: newUser.following,
@@ -60,12 +60,12 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { userName, password} = req.body;
-        const user = await User.findOne({userName});
+        const { username, password} = req.body;
+        const user = await User.findOne({username});
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "")
 
         if(!user || !isPasswordCorrect){
-            return res.status(400).json({error: 'Invalid username or password '})
+            return res.status(400).json({error: 'Invalid username or password'})
         }
 
         generateTokenAndSetCookie(user._id, res);
@@ -73,13 +73,13 @@ export const login = async (req, res) => {
         res.status(200).json({
             _id: user._id,
             fullName: user.fullName,
-            userName: user.userName,
+            username: user.username,
             email: user.email,
             followers: user.followers,
             following: user.following,
             profileImg: user.profileImg,
             coverImg: user.coverImg,
-        })
+        });
     } catch (error){
         console.log('Error in login controller', error.message);
         res.status(500).json({error: 'Internal Server Error'})
