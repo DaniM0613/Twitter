@@ -51,6 +51,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    linkedPosts:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            default:[],
+        },
+    ],
 }, 
 {timestamps: true});
 
